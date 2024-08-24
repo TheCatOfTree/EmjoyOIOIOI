@@ -1,0 +1,31 @@
+syntax = "proto3";  //代表声明pb使用的语法版本是3.0
+
+package myGame;
+////客户端----》服务器  
+message  C2S_OperationMsg
+{
+	int32 userid = 1;  //发送者的Id
+	int32 Drag = 2;
+}
+
+///服务器转发的客户端的数据，服务器每500ms发一次。
+message  S2C_FameMsg
+{
+ 	int32 score = 1;
+	int32 nowTime  =2;
+}
+
+///当客户端连接到服务器的时候，服务器向客户端发一下客户端的Id
+message S2C_ConnectResponseMsg
+{
+	int32  userid = 1;
+}
+
+
+
+ 
+
+
+
+
+
