@@ -9,14 +9,18 @@ using UnityEngine.UI;
 public class ScoreUpdate : MonoBehaviour
 {
     public Text text;
+
+    public Text count;
+
     // Start is called before the first frame update
     void Start()
     {
     }
 
     // Update score
-    public void UpdateScore(C2S_OperationMsg item)
+    public void UpdatePlayer(C2S_OperationMsg item)
     {
-        text.text = item.Score.ToString();
+        text.text = $"得分：{item.Score}";
+        count.text = $"剩余次数：{item.Count}";
     }
 }

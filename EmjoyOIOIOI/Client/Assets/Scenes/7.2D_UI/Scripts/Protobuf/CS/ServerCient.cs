@@ -24,19 +24,19 @@ namespace MyGame {
     static ServerCientReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChFTZXJ2ZXJDaWVudC5wcm90bxIGbXlHYW1lIk4KEEMyU19PcGVyYXRpb25N",
+            "ChFTZXJ2ZXJDaWVudC5wcm90bxIGbXlHYW1lIl0KEEMyU19PcGVyYXRpb25N",
             "c2cSDgoGdXNlcmlkGAEgASgFEgwKBERyYWcYAiABKAgSDQoFc2NvcmUYAyAB",
-            "KAUSDQoFcmVhZHkYBCABKAgiZwoKQzJTX1Jlc3VsdBIrCglXaW5QbGF5ZXIY",
-            "ASABKAsyGC5teUdhbWUuQzJTX09wZXJhdGlvbk1zZxIsCgpsb3NlUGxheWVy",
-            "GAIgASgLMhgubXlHYW1lLkMyU19PcGVyYXRpb25Nc2ciZAoLUzJDX0ZhbWVN",
-            "c2cSLwoNb3BlcmF0aW9uTGlzdBgBIAMoCzIYLm15R2FtZS5DMlNfT3BlcmF0",
-            "aW9uTXNnEg8KB25vd1RpbWUYAiABKAUSEwoLR2FtZVBsYXlpbmcYAyABKAgi",
-            "KAoWUzJDX0Nvbm5lY3RSZXNwb25zZU1zZxIOCgZ1c2VyaWQYASABKAViBnBy",
-            "b3RvMw=="));
+            "KAUSDQoFY291bnQYBCABKAUSDQoFcmVhZHkYBSABKAgiZwoKQzJTX1Jlc3Vs",
+            "dBIrCglXaW5QbGF5ZXIYASABKAsyGC5teUdhbWUuQzJTX09wZXJhdGlvbk1z",
+            "ZxIsCgpsb3NlUGxheWVyGAIgASgLMhgubXlHYW1lLkMyU19PcGVyYXRpb25N",
+            "c2ciZAoLUzJDX0ZhbWVNc2cSLwoNb3BlcmF0aW9uTGlzdBgBIAMoCzIYLm15",
+            "R2FtZS5DMlNfT3BlcmF0aW9uTXNnEg8KB25vd1RpbWUYAiABKAUSEwoLR2Ft",
+            "ZVBsYXlpbmcYAyABKAgiKAoWUzJDX0Nvbm5lY3RSZXNwb25zZU1zZxIOCgZ1",
+            "c2VyaWQYASABKAViBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MyGame.C2S_OperationMsg), global::MyGame.C2S_OperationMsg.Parser, new[]{ "Userid", "Drag", "Score", "Ready" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::MyGame.C2S_OperationMsg), global::MyGame.C2S_OperationMsg.Parser, new[]{ "Userid", "Drag", "Score", "Count", "Ready" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::MyGame.C2S_Result), global::MyGame.C2S_Result.Parser, new[]{ "WinPlayer", "LosePlayer" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::MyGame.S2C_FameMsg), global::MyGame.S2C_FameMsg.Parser, new[]{ "OperationList", "NowTime", "GamePlaying" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::MyGame.S2C_ConnectResponseMsg), global::MyGame.S2C_ConnectResponseMsg.Parser, new[]{ "Userid" }, null, null, null, null)
@@ -87,6 +87,7 @@ namespace MyGame {
       userid_ = other.userid_;
       drag_ = other.drag_;
       score_ = other.score_;
+      count_ = other.count_;
       ready_ = other.ready_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -136,8 +137,20 @@ namespace MyGame {
       }
     }
 
+    /// <summary>Field number for the "count" field.</summary>
+    public const int CountFieldNumber = 4;
+    private int count_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int Count {
+      get { return count_; }
+      set {
+        count_ = value;
+      }
+    }
+
     /// <summary>Field number for the "ready" field.</summary>
-    public const int ReadyFieldNumber = 4;
+    public const int ReadyFieldNumber = 5;
     private bool ready_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -166,6 +179,7 @@ namespace MyGame {
       if (Userid != other.Userid) return false;
       if (Drag != other.Drag) return false;
       if (Score != other.Score) return false;
+      if (Count != other.Count) return false;
       if (Ready != other.Ready) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -177,6 +191,7 @@ namespace MyGame {
       if (Userid != 0) hash ^= Userid.GetHashCode();
       if (Drag != false) hash ^= Drag.GetHashCode();
       if (Score != 0) hash ^= Score.GetHashCode();
+      if (Count != 0) hash ^= Count.GetHashCode();
       if (Ready != false) hash ^= Ready.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -208,8 +223,12 @@ namespace MyGame {
         output.WriteRawTag(24);
         output.WriteInt32(Score);
       }
-      if (Ready != false) {
+      if (Count != 0) {
         output.WriteRawTag(32);
+        output.WriteInt32(Count);
+      }
+      if (Ready != false) {
+        output.WriteRawTag(40);
         output.WriteBool(Ready);
       }
       if (_unknownFields != null) {
@@ -234,8 +253,12 @@ namespace MyGame {
         output.WriteRawTag(24);
         output.WriteInt32(Score);
       }
-      if (Ready != false) {
+      if (Count != 0) {
         output.WriteRawTag(32);
+        output.WriteInt32(Count);
+      }
+      if (Ready != false) {
+        output.WriteRawTag(40);
         output.WriteBool(Ready);
       }
       if (_unknownFields != null) {
@@ -256,6 +279,9 @@ namespace MyGame {
       }
       if (Score != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Score);
+      }
+      if (Count != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Count);
       }
       if (Ready != false) {
         size += 1 + 1;
@@ -280,6 +306,9 @@ namespace MyGame {
       }
       if (other.Score != 0) {
         Score = other.Score;
+      }
+      if (other.Count != 0) {
+        Count = other.Count;
       }
       if (other.Ready != false) {
         Ready = other.Ready;
@@ -316,6 +345,10 @@ namespace MyGame {
             break;
           }
           case 32: {
+            Count = input.ReadInt32();
+            break;
+          }
+          case 40: {
             Ready = input.ReadBool();
             break;
           }
@@ -351,6 +384,10 @@ namespace MyGame {
             break;
           }
           case 32: {
+            Count = input.ReadInt32();
+            break;
+          }
+          case 40: {
             Ready = input.ReadBool();
             break;
           }
