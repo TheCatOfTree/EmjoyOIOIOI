@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using MyGame;
 using ServerTest.framework;
@@ -18,20 +19,26 @@ namespace ServerTest.GameControll
         public void Init()
         {
             Message_manager.GetInstance().Addlistener((int)MsgIDDefine.ClientConnectedID, ClientConnect);
-            Message_manager.GetInstance().Addlistener((int)MsgIDDefine.C2S_OperationMsgID, operationMsgHandler);
             Message_manager.GetInstance().Addlistener((int)MsgIDDefine.C2S_LoginMsgId, loginHandler);
+            Message_manager.GetInstance().Addlistener((int)MsgIDDefine.C2S_OperationMsgID, operationMsgHandler);
         }
 
         private void loginHandler(Notification obj)
         {
             MyGame.C2S_OperationMsg msg = MyGame.C2S_OperationMsg.Parser.ParseFrom(obj.content);
             if (msg.Ready)
+            {
                 clientReady++;
+                operationMsgList.Add(msg);
+            }
+
             if (clientID == 2 && clientReady == 2)
             {
+                Console.WriteLine("开始游戏");
+                NetManager.GetInstance().sendMsgToClient(MsgIDDefine.S2C_GamePlaying, msg, obj.client);
                 time.StartCountdown(0, 0, 60);
-                ///开启一个500ms执行一次的逻辑
-                ThreadPool.QueueUserWorkItem(sendFrameLoop);
+                //开启一个500ms执行一次的逻辑
+                ThreadPool.QueueUserWorkItem(SendFrameLoop);
             }
         }
 
@@ -46,15 +53,15 @@ namespace ServerTest.GameControll
             clientID++;
             allClients.Add(clientID, obj.client);
 
-            ///发消息告诉客户端，你的ID是什么
+            //发消息告诉客户端，你的ID是什么
             MyGame.S2C_ConnectResponseMsg m = new MyGame.S2C_ConnectResponseMsg();
             m.Userid = clientID;
             NetManager.GetInstance().sendMsgToClient(MsgIDDefine.S2C_ConnectResponseMsgID, m, obj.client);
         }
 
-        private void sendFrameLoop(object state)
+        private void SendFrameLoop(object state)
         {
-            ///每50毫秒执行。
+            //每500毫秒执行。
             while (true)
             {
                 broadcastOperationMsg();
@@ -67,15 +74,6 @@ namespace ServerTest.GameControll
             MyGame.S2C_FameMsg m = new MyGame.S2C_FameMsg();
             lock (obj)
             {
-                if (time.totalSeconds > 0)
-                {
-                    m.GamePlaying = true;
-                }
-                else
-                {
-                    m.GamePlaying = false;
-                }
-
                 m.NowTime = time.totalSeconds;
                 foreach (var item in operationMsgList)
                 {

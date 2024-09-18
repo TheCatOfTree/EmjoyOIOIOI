@@ -10,6 +10,7 @@
         /// 下行协议
         /// </summary>
         S2C_ConnectResponseMsgID = 20001,
+        S2C_GamePlaying=20002,
         S2C_FameMsgID= 20003,
     
         /// <summary>
