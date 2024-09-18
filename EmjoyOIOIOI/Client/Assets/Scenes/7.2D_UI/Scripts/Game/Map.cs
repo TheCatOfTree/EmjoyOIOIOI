@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
@@ -10,10 +11,11 @@ using Vector3 = UnityEngine.Vector3;
 public class Map : MonoBehaviour
 {
     public GameObject pItem;
-    
+    public GameLogic logic;
+
     public int width;
     public int height;
-    private Vector2 initPosition = new Vector2(300, 60);
+    private Vector2 initPosition = new Vector2(400, 60);
     public ItemTable ac;
     private float offset = 110;
     public GameObject itemPrefab;
@@ -35,12 +37,17 @@ public class Map : MonoBehaviour
 
     private void Start()
     {
+        CreatMap();
+    }
+
+    private void Awake()
+    {
         ac.map = transform.gameObject;
         items = new GameObject[height, width];
         Citems = new Item[height, width];
         waitRemoveItems = new List<Item>();
         specialItems = new List<Item>();
-        CreatMap();
+        logic = gameObject.GetComponent<GameLogic>();
     }
 
     private void OnDestroy()
@@ -74,7 +81,8 @@ public class Map : MonoBehaviour
                 Removed();
                 Initscore += scoreOffset;
                 Fall();
-                GameManager.Instance.canSend = true;
+                if (GameManager.Instance.gamePlaying)
+                    GameManager.Instance.canSend = true;
             }
             else
             {
@@ -292,7 +300,7 @@ public class Map : MonoBehaviour
                 {
                     if (GameManager.Instance.gamePlaying)
                     {
-                        GameManager.Instance.score += Initscore;
+                        logic.score += Initscore;
                     }
 
                     Destroy(Citems[i, j].gameObject);

@@ -10,19 +10,19 @@ message  C2S_OperationMsg
   int32 count = 4;
   bool ready = 5;
 }
-message C2S_Result
-{
-  C2S_OperationMsg WinPlayer = 1;
-  C2S_OperationMsg losePlayer = 2;
-}
+
 ///服务器转发的客户端的数据，服务器每500ms发一次。
 message  S2C_FameMsg
 {
   repeated C2S_OperationMsg operationList = 1;
   int32 nowTime = 2;
-  bool GamePlaying = 3;
 }
 
+message S2C_Result
+{
+  C2S_OperationMsg WinPlayer = 1;
+  C2S_OperationMsg losePlayer = 2;
+}
 
 ///当客户端连接到服务器的时候，服务器向客户端发一下客户端的Id
 message S2C_ConnectResponseMsg

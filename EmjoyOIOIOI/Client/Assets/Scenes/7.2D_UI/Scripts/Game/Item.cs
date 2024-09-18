@@ -97,10 +97,11 @@ public class Item : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (!map.animationIsReady)
+        if (!map.animationIsReady || map.logic.count <= 0)
         {
             return; // 有Tween在播放时不允许拖动
         }
+
 
         map.touchItem = transform.gameObject;
         map.ItouchItem = map.touchItem.GetComponent<Item>();
@@ -110,7 +111,7 @@ public class Item : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (!map.animationIsReady)
+        if (!map.animationIsReady|| map.logic.count <= 0)
         {
             return; // 有Tween在播放时不允许拖动
         }
@@ -124,12 +125,12 @@ public class Item : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!map.animationIsReady)
+        if (!map.animationIsReady|| map.logic.count <= 0)
         {
             return; // 有Tween在播放时不允许拖动
         }
 
-        if (map.touchItem&&map.forecastItem)
+        if (map.touchItem && map.forecastItem)
             map.Swap();
         map.mouseVelocity = Vector2.zero;
     }

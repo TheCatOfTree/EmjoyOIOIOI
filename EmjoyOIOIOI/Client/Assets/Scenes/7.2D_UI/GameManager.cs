@@ -3,30 +3,35 @@ using System.Collections.Generic;
 using System.Numerics;
 using Common;
 using Unity.Mathematics;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Vector3 = UnityEngine.Vector3;
 
 
-class Level
+public class Level
 {
     public float time;
     private int bout;
-    private int count;
+    public int count;
 }
 
 public class GameManager : MonoSingleton<GameManager>
 {
+    public GameObject PlayGame;
+    public GameObject canvas;
+    public GameObject prefabMap;
+
     public bool gamePlaying = false;
     private bool gameReady;
     public Button ready;
     public Image back;
 
-    private List<Level> leve = new List<Level>();
+    public Level one;
 
     //Get in Sever
-    private int userid;
+    public int userid;
     public bool drag = false;
 
     public bool canSend = false;
@@ -38,8 +43,6 @@ public class GameManager : MonoSingleton<GameManager>
     //游戏回合数
     public int bout;
 
-    //每回合的拖拽次数
-    public int count;
 
     //游戏得分
     public int score;
@@ -48,14 +51,27 @@ public class GameManager : MonoSingleton<GameManager>
 
     private Dictionary<int, GameObject> allCLientDic = new Dictionary<int, GameObject>();
 
+
+    protected override void Awake()
+    {
+        base.Awake();
+        one = new Level();
+        one.count = 20;
+        one.time = 60;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         // Instantiate(canvas, Vector3.zero, quaternion.identity).name="Map";
         Netmanager.GetInstance().Connect("127.0.0.1", 8848);
-
         Message_manager.GetInstance().Addlistener((int)MsgIDDefine.S2C_ConnectResponseMsgID, ConnectHandler);
-        Message_manager.GetInstance().Addlistener((int)MsgIDDefine.S2C_FameMsgID, LogicUpdate);
+        Message_manager.GetInstance().Addlistener((int)MsgIDDefine.S2C_GamePlaying, GamePlaying);
+    }
+
+    private void GamePlaying(Notification obj)
+    {
+        gamePlaying = true;
     }
 
     private void ConnectHandler(Notification obj)
@@ -65,53 +81,20 @@ public class GameManager : MonoSingleton<GameManager>
         this.userid = m.Userid;
     }
 
-    private void LogicUpdate(Notification obj)
-    {
-        MyGame.S2C_FameMsg m = MyGame.S2C_FameMsg.Parser.ParseFrom(obj.content);
-
-        if (m.NowTime != gameTime)
-        {
-            gameTime = m.NowTime;
-            gamePlaying = m.GamePlaying;
-            UIUpdate.Instance.TimeUpdate(m);
-        }
-
-        if (m.OperationList.Count > 0) //不是空帧
-        {
-            foreach (var operation in m.OperationList)
-            {
-                if (allCLientDic.TryGetValue(operation.Userid, out var value))
-                {
-                    ScoreUpdate score = value.GetComponent<ScoreUpdate>();
-                    score.UpdatePlayer(operation);
-                }
-                else
-                {
-                    GameObject prefab = Resources.Load<GameObject>("PlayerScores");
-                    GameObject go = GameObject.Instantiate(prefab, GameObject.Find("PlayerScore").transform, true);
-                    allCLientDic.Add(operation.Userid, go);
-
-                    ScoreUpdate score = go.GetComponent<ScoreUpdate>();
-                    score.UpdatePlayer(operation);
-                }
-            }
-        }
-        else //空帧 情况下；
-        {
-            foreach (var go in allCLientDic.Values)
-            {
-                // ScoreUpdate ctrl = go.GetComponent<ScoreUpdate>();
-                // ctrl.UpdateScore(null);
-            }
-        }
-
-        gameTime = m.NowTime;
-    }
-
     public void ChangeGameReady()
     {
         gameReady = true;
         ready.gameObject.SetActive(false);
+    }
+
+    public void CreateGame()
+    {
+        PlayGame.SetActive(false);
+        GameObject go = Instantiate(prefabMap, canvas.transform);
+        go.GetComponent<GameLogic>().playerId = userid;
+        ready = go.transform.Find("Image/Button (Legacy)").GetComponent<Button>();
+        back = go.transform.Find("Image").GetComponent<Image>();
+        ready.onClick.AddListener(ChangeGameReady);
     }
 
     // Update is called once per frame
@@ -126,27 +109,14 @@ public class GameManager : MonoSingleton<GameManager>
             {
                 back.gameObject.SetActive(false);
             }
-
-            if (drag)
-            {
-                m.Drag = true;
-                m.Count = --count;
-                Netmanager.GetInstance().sendMsgToServer(MsgIDDefine.C2S_OperationMsgID, m);
-                drag = false;
-            }
-
-            if (canSend)
-            {
-                m.Score = this.score;
-                Netmanager.GetInstance().sendMsgToServer(MsgIDDefine.C2S_OperationMsgID, m);
-                canSend = false;
-            }
         }
+
 
         if (gameReady)
         {
             m.Ready = true;
-            m.Count = count;
+            m.Count = one.count;
+            m.Userid = userid;
             Netmanager.GetInstance().sendMsgToServer(MsgIDDefine.C2S_LoginMsgId, m);
             gameReady = false;
         }
