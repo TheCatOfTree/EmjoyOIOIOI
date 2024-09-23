@@ -35,7 +35,10 @@ namespace ServerTest.GameControll
             if (clientID == 2 && clientReady == 2)
             {
                 Console.WriteLine("开始游戏");
-                NetManager.GetInstance().sendMsgToClient(MsgIDDefine.S2C_GamePlaying, msg, obj.client);
+                foreach (var item in allClients.Values)
+                {
+                    NetManager.GetInstance().sendMsgToClient(MsgIDDefine.S2C_GamePlaying, msg, item);
+                }
                 time.StartCountdown(0, 0, 60);
                 //开启一个500ms执行一次的逻辑
                 ThreadPool.QueueUserWorkItem(SendFrameLoop);
